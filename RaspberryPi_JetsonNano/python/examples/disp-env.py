@@ -37,7 +37,7 @@ try:
     draw.text((15 + 160, 12), u'C', font = fontM, fill = 0)
     draw.text((15, 40), u'H ' + str(parsed['h']) , font = fontL, fill = 0)
     draw.text((15 + 160, 40 + 12), u'%', font = fontM, fill = 0)
-    draw.text((15, 80), u'P ' + str(parsed['p']) , font = fontL, fill = 0)
+    draw.text((15, 80), u'P ' + '{0: 4d}'.format(parsed['p']) , font = fontL, fill = 0)
     draw.text((15 + 160, 80 + 12), u'hPa', font = fontM, fill = 0)
     draw.text((60, 145), strdt, font = fontS, fill = 0)
     epd.display(epd.getbuffer(Himage))
