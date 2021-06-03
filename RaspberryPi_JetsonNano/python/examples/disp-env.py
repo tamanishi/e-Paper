@@ -5,6 +5,7 @@ import os
 import subprocess
 import json
 import datetime
+import traceback
 
 libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
 if os.path.exists(libdir):
@@ -46,6 +47,7 @@ try:
         
 except IOError as e:
     logging.info(e)
+    print(traceback.format_exc())
     
 except KeyboardInterrupt:    
     logging.info("ctrl + c:")
