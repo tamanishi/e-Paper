@@ -6,6 +6,7 @@ import subprocess
 import json
 import datetime
 import traceback
+import argparse
 
 libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
 if os.path.exists(libdir):
@@ -17,6 +18,10 @@ from PIL import Image,ImageDraw,ImageFont
 from subprocess import PIPE
 
 logging.basicConfig(level=logging.DEBUG)
+
+parser = argparse.ArgumentParser(description='show temperature, humidity and air pressure.')
+parser.add_argument('-i', '--image', action='store_true', help='save image.jpg')
+args = parser.parse_args()
 
 try:
 
@@ -35,13 +40,16 @@ try:
     Himage = Image.new('1', (epd.height, epd.width), 255)  # 255: clear the frame
     draw = ImageDraw.Draw(Himage)
     draw.text((15, 0), u'T ' + str(parsed['te']) , font = fontL, fill = 0)
-    draw.text((15 + 160, 12), u'C', font = fontM, fill = 0)
+    draw.text((15 + 160, 12), u'\'C', font = fontM, fill = 0)
     draw.text((15, 40), u'H ' + str(parsed['h']) , font = fontL, fill = 0)
     draw.text((15 + 160, 40 + 12), u'%', font = fontM, fill = 0)
     draw.text((15, 80), u'P ' + '{:>4}'.format(parsed['p']) , font = fontL, fill = 0)
     draw.text((15 + 160, 80 + 12), u'hPa', font = fontM, fill = 0)
     draw.text((60, 145), strdt, font = fontS, fill = 0)
     epd.display(epd.getbuffer(Himage))
+   
+    if args.image:
+        Himage.save(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'image.jpg'))
 
     epd.sleep()
         
