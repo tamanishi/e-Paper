@@ -26,7 +26,7 @@ args = parser.parse_args()
 try:
 
     epd = epd2in7.EPD()
-    command = subprocess.run(['ssh', 'rp3', '/home/pi/src/measure_home_env_fs/target/debug/measure_home_env_fs', '--dryrun'], text=True, stdout=PIPE)
+    command = subprocess.run(['ssh', 'rp3', '/home/pi/.cargo/bin/measure_home_env_fs', '--dryrun'], text=True, stdout=PIPE)
 
     parsed = json.loads(command.stdout)
 
