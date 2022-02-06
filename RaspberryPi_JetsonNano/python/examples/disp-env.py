@@ -26,26 +26,47 @@ args = parser.parse_args()
 try:
 
     epd = epd2in7.EPD()
-    command = subprocess.run(['ssh', 'rp3', '/home/pi/.cargo/bin/measure_home_env_fs', '--dryrun'], text=True, stdout=PIPE)
+    command1 = subprocess.run(['ssh', 'rp3', '/home/pi/.cargo/bin/measure_home_env_fs', '--dryrun'], text=True, stdout=PIPE)
+    command2 = subprocess.run(['ssh', 'rp4', '/home/tamanishi/.cargo/bin/measure_air_quality'], text=True, stdout=PIPE)
 
-    parsed = json.loads(command.stdout)
+    # print(command1.stdout)
+    # print(command2.stdout)
 
-    dt = datetime.datetime.strptime(parsed['ti'], '%Y/%m/%d %H:%M:%S')
+    parsed1 = json.loads(command1.stdout)
+    parsed2 = json.loads(command2.stdout)
+
+    dt = datetime.datetime.strptime(parsed1['ti'], '%Y/%m/%d %H:%M:%S')
     strdt = dt.strftime('%a.%b.%-d %-I:%M%p')
 
     epd.init()
-    fontL = ImageFont.truetype('NotoSansMono-Regular.ttf', 42)
-    fontM = ImageFont.truetype('NotoSansMono-Regular.ttf', 30)
+    fontL = ImageFont.truetype('NotoSansMono-Regular.ttf', 32)
+    fontM = ImageFont.truetype('NotoSansMono-Regular.ttf', 26)
     fontS = ImageFont.truetype('NotoSansMono-Light.ttf', 18)
     Himage = Image.new('1', (epd.height, epd.width), 255)  # 255: clear the frame
     draw = ImageDraw.Draw(Himage)
-    draw.text((15, 0), u'T ' + str(parsed['te']) , font = fontL, fill = 0)
-    draw.text((15 + 160, 12), u'\'C', font = fontM, fill = 0)
-    draw.text((15, 40), u'H ' + str(parsed['h']) , font = fontL, fill = 0)
-    draw.text((15 + 160, 40 + 12), u'%', font = fontM, fill = 0)
-    draw.text((15, 80), u'P ' + '{:>4}'.format(parsed['p']) , font = fontL, fill = 0)
-    draw.text((15 + 160, 80 + 12), u'hPa', font = fontM, fill = 0)
+    # Temperature
+    draw.text((28, 0), u'T' , font = fontL, fill = 0)
+    draw.text((28 + 52, 0), str(parsed1['te']), font = fontL, fill = 0)
+    draw.text((28 + 152, 6), u'\'C', font = fontM, fill = 0)
+
+    # Humidity
+    draw.text((28, 32), u'H', font = fontL, fill = 0)
+    draw.text((28 + 52, 32), str(parsed1['h']), font = fontL, fill = 0)
+    draw.text((28 + 152, 32 + 6), u'%', font = fontM, fill = 0)
+
+    # Pressure
+    draw.text((28, 64), u'P', font = fontL, fill = 0)
+    draw.text((28 + 52, 64), '{:>4}'.format(parsed1['p']), font = fontL, fill = 0)
+    draw.text((28 + 152, 64 + 6), u'hPa', font = fontM, fill = 0)
+
+    # CO2
+    draw.text((28, 96), u'C', font = fontL, fill = 0)
+    draw.text((28 + 52, 96), '{:>4}'.format(parsed2['co2']), font = fontL, fill = 0)
+    draw.text((28 + 152, 96 + 6), u'ppm', font = fontM, fill = 0)
+
+    # DateTime
     draw.text((60, 145), strdt, font = fontS, fill = 0)
+
     epd.display(epd.getbuffer(Himage))
    
     if args.image:
