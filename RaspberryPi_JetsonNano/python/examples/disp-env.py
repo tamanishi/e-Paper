@@ -27,7 +27,7 @@ try:
 
     epd = epd2in7.EPD()
     command1 = subprocess.run(['ssh', 'rp3', '/home/pi/.cargo/bin/measure_home_env_fs', '--dryrun'], text=True, stdout=PIPE)
-    command2 = subprocess.run(['ssh', 'rp4', '/home/tamanishi/.cargo/bin/measure_air_quality'], text=True, stdout=PIPE)
+    command2 = subprocess.run(['ssh', 'rp3', '/home/pi/.cargo/bin/measure_air_quality'], text=True, stdout=PIPE)
 
     # print(command1.stdout)
     # print(command2.stdout)
