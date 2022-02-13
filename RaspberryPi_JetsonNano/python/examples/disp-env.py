@@ -46,17 +46,17 @@ try:
     draw = ImageDraw.Draw(Himage)
     # Temperature
     draw.text((28, 0), u'T' , font = fontL, fill = 0)
-    draw.text((28 + 52, 0), str(parsed1['temperature']), font = fontL, fill = 0)
+    draw.text((28 + 52, 0), str(round(parsed1['temperature'], 1)), font = fontL, fill = 0)
     draw.text((28 + 152, 6), u'\'C', font = fontM, fill = 0)
 
     # Humidity
     draw.text((28, 32), u'H', font = fontL, fill = 0)
-    draw.text((28 + 52, 32), str(parsed1['humidity']), font = fontL, fill = 0)
+    draw.text((28 + 52, 32), str(round(parsed1['humidity'], 1)), font = fontL, fill = 0)
     draw.text((28 + 152, 32 + 6), u'%', font = fontM, fill = 0)
 
     # Pressure
     draw.text((28, 64), u'P', font = fontL, fill = 0)
-    draw.text((28 + 52, 64), '{:>4}'.format(parsed1['pressure']), font = fontL, fill = 0)
+    draw.text((28 + 52, 64), '{:>4}'.format(int(parsed1['pressure'])), font = fontL, fill = 0)
     draw.text((28 + 152, 64 + 6), u'hPa', font = fontM, fill = 0)
 
     # CO2
