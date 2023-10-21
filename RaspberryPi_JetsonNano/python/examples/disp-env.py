@@ -19,6 +19,9 @@ from subprocess import PIPE
 
 logging.basicConfig(level=logging.DEBUG)
 
+# Raspbeery Pi (jessie) 一般ユーザでのRPi.GPIO操作
+# https://netosaba.hatenablog.jp/entry/Raspbeery_Pi_%28jessie%29_%E4%B8%80%E8%88%AC%E3%83%A6%E3%83%BC%E3%82%B6%E3%81%A7%E3%81%AERPi_GPIO%E6%93%8D%E4%BD%9C
+
 parser = argparse.ArgumentParser(description='show temperature, humidity and air pressure.')
 parser.add_argument('-i', '--image', action='store_true', help='save image.jpg')
 args = parser.parse_args()
