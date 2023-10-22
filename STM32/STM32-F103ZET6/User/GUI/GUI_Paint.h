@@ -116,11 +116,15 @@ typedef enum {
 #define FONT_FOREGROUND     BLACK
 #define FONT_BACKGROUND     WHITE
 
+#define TRUE 1
+#define FALSE 0
+
 //4 Gray level
 #define  GRAY1 0x03 //Blackest
 #define  GRAY2 0x02
 #define  GRAY3 0x01 //gray
 #define  GRAY4 0x00 //white
+
 /**
  * The size of the point
 **/
@@ -196,10 +200,12 @@ void Paint_DrawChar(UWORD Xstart, UWORD Ystart, const char Acsii_Char, sFONT* Fo
 void Paint_DrawString_EN(UWORD Xstart, UWORD Ystart, const char * pString, sFONT* Font, UWORD Color_Foreground, UWORD Color_Background);
 void Paint_DrawString_CN(UWORD Xstart, UWORD Ystart, const char * pString, cFONT* font, UWORD Color_Foreground, UWORD Color_Background);
 void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber, sFONT* Font, UWORD Color_Foreground, UWORD Color_Background);
+void Paint_DrawNumDecimals(UWORD Xpoint, UWORD Ypoint, double Nummber, sFONT* Font, UWORD Digit, UWORD Color_Foreground, UWORD Color_Background); // Able to display decimals
 void Paint_DrawTime(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT* Font, UWORD Color_Foreground, UWORD Color_Background);
 
 //pic
 void Paint_DrawBitMap(const unsigned char* image_buffer);
+void Paint_DrawBitMap_Paste(const unsigned char* image_buffer, UWORD Xstart, UWORD Ystart, UWORD imageWidth, UWORD imageHeight, UBYTE flipColor);
 //void Paint_DrawBitMap_Half(const unsigned char* image_buffer, UBYTE Region);
 //void Paint_DrawBitMap_OneQuarter(const unsigned char* image_buffer, UBYTE Region);
 //void Paint_DrawBitMap_OneEighth(const unsigned char* image_buffer, UBYTE Region);

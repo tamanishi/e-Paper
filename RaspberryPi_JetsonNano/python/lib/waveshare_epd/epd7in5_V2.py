@@ -35,6 +35,8 @@ from . import epdconfig
 EPD_WIDTH       = 800
 EPD_HEIGHT      = 480
 
+logger = logging.getLogger(__name__)
+
 class EPD:
     def __init__(self):
         self.reset_pin = epdconfig.RST_PIN
@@ -47,11 +49,11 @@ class EPD:
     # Hardware reset
     def reset(self):
         epdconfig.digital_write(self.reset_pin, 1)
-        epdconfig.delay_ms(200) 
+        epdconfig.delay_ms(20) 
         epdconfig.digital_write(self.reset_pin, 0)
         epdconfig.delay_ms(2)
         epdconfig.digital_write(self.reset_pin, 1)
-        epdconfig.delay_ms(200)   
+        epdconfig.delay_ms(20)   
 
     def send_command(self, command):
         epdconfig.digital_write(self.dc_pin, 0)
@@ -72,19 +74,26 @@ class EPD:
         epdconfig.digital_write(self.cs_pin, 1)
 
     def ReadBusy(self):
-        logging.debug("e-Paper busy")
+        logger.debug("e-Paper busy")
         self.send_command(0x71)
         busy = epdconfig.digital_read(self.busy_pin)
         while(busy == 0):
             self.send_command(0x71)
             busy = epdconfig.digital_read(self.busy_pin)
-        epdconfig.delay_ms(200)
+        epdconfig.delay_ms(20)
+        logger.debug("e-Paper busy release")
         
     def init(self):
         if (epdconfig.module_init() != 0):
             return -1
         # EPD hardware init start
         self.reset()
+        
+        self.send_command(0x06)     # btst
+        self.send_data(0x17)
+        self.send_data(0x17)
+        self.send_data(0x28)        # If an exception is displayed, try using 0x38
+        self.send_data(0x17)
         
         self.send_command(0x01)			#POWER SETTING
         self.send_data(0x07)
@@ -127,7 +136,7 @@ class EPD:
             # image has correct dimensions, but needs to be rotated
             img = img.rotate(90, expand=True).convert('1')
         else:
-            logging.warning("Wrong image dimensions: must be " + str(self.width) + "x" + str(self.height))
+            logger.warning("Wrong image dimensions: must be " + str(self.width) + "x" + str(self.height))
             # return a blank buffer
             return [0x00] * (int(self.width/8) * self.height)
 
@@ -166,4 +175,3 @@ class EPD:
         epdconfig.delay_ms(2000)
         epdconfig.module_exit()
 ### END OF FILE ###
-

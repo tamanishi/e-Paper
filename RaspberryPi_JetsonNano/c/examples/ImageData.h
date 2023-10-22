@@ -31,8 +31,13 @@
 
 #ifndef _IMAGEDATA_H_
 #define _IMAGEDATA_H_
+// ImageData2
+extern const unsigned char gImage_2in13b_V4b[];
+extern const unsigned char gImage_2in13b_V4r[];
 
 
+/* ------------------------------------------------ */
+// Imagedata
 extern const unsigned char flagimage[];
 extern const unsigned char gImage_2in13_2[];
 
@@ -82,6 +87,8 @@ extern const unsigned char gImage_7in5bc_b[];
 extern const unsigned char gImage_7in5bc_ry[];
 extern const unsigned char gImage_7in5_V2_b[];
 extern const unsigned char gImage_7in5_V2_ry[];
+
+extern const unsigned char gImage_13in3k[];
 
 #endif
 /* FILE END */

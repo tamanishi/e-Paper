@@ -67,13 +67,13 @@ try:
     epd.display(epd.getbuffer(LBlackimage), epd.getbuffer(LRYimage))
     time.sleep(2)
     
-    # logging.info("3.read bmp file")
+    logging.info("3.read bmp file")
     Blackimage = Image.open(os.path.join(picdir, '2in13bc-b.bmp'))
     RYimage = Image.open(os.path.join(picdir, '2in13bc-ry.bmp'))
     epd.display(epd.getbuffer(Blackimage), epd.getbuffer(RYimage))
     time.sleep(2)
     
-    # logging.info("4.read bmp file on window")
+    logging.info("4.read bmp file on window")
     blackimage1 = Image.new('1', (epd.height, epd.width), 255)  # 298*126
     redimage1 = Image.new('1', (epd.height, epd.width), 255)  # 298*126    
     newimage = Image.open(os.path.join(picdir, '100x100.bmp'))

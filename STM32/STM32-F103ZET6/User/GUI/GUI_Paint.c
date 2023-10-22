@@ -262,14 +262,21 @@ parameter:
 ******************************************************************************/
 void Paint_Clear(UWORD Color)
 {
-	if(Paint.Scale == 2 || Paint.Scale == 4){
+	if(Paint.Scale == 2) {
 		for (UWORD Y = 0; Y < Paint.HeightByte; Y++) {
 			for (UWORD X = 0; X < Paint.WidthByte; X++ ) {//8 pixel =  1 byte
 				UDOUBLE Addr = X + Y*Paint.WidthByte;
 				Paint.Image[Addr] = Color;
 			}
 		}		
-	}else if(Paint.Scale == 7){
+    }else if(Paint.Scale == 4) {
+        for (UWORD Y = 0; Y < Paint.HeightByte; Y++) {
+			for (UWORD X = 0; X < Paint.WidthByte; X++ ) {
+				UDOUBLE Addr = X + Y*Paint.WidthByte;
+				Paint.Image[Addr] = (Color<<6)|(Color<<4)|(Color<<2)|Color;
+			}
+		}		
+	}else if(Paint.Scale == 7) {
 		for (UWORD Y = 0; Y < Paint.HeightByte; Y++) {
 			for (UWORD X = 0; X < Paint.WidthByte; X++ ) {
 				UDOUBLE Addr = X + Y*Paint.WidthByte;
@@ -711,11 +718,72 @@ void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber,
     }
 
     //Converts a number to a string
-    while (Nummber) {
+    do {
         Num_Array[Num_Bit] = Nummber % 10 + '0';
         Num_Bit++;
         Nummber /= 10;
+    } while(Nummber);
+    
+
+    //The string is inverted
+    while (Num_Bit > 0) {
+        Str_Array[Str_Bit] = Num_Array[Num_Bit - 1];
+        Str_Bit ++;
+        Num_Bit --;
     }
+
+    //show
+    Paint_DrawString_EN(Xpoint, Ypoint, (const char*)pStr, Font, Color_Background, Color_Foreground);
+}
+
+/******************************************************************************
+function:	Display nummber (Able to display decimals)
+parameter:
+    Xstart           ：X coordinate
+    Ystart           : Y coordinate
+    Nummber          : The number displayed
+    Font             ：A structure pointer that displays a character size
+    Digit            : Fractional width
+    Color_Foreground : Select the foreground color
+    Color_Background : Select the background color
+******************************************************************************/
+void Paint_DrawNumDecimals(UWORD Xpoint, UWORD Ypoint, double Nummber,
+                    sFONT* Font, UWORD Digit, UWORD Color_Foreground, UWORD Color_Background)
+{
+    int16_t Num_Bit = 0, Str_Bit = 0;
+    uint8_t Str_Array[ARRAY_LEN] = {0}, Num_Array[ARRAY_LEN] = {0};
+    uint8_t *pStr = Str_Array;
+	int temp = Nummber;
+	float decimals;
+	uint8_t i;
+    if (Xpoint > Paint.Width || Ypoint > Paint.Height) {
+        Debug("Paint_DisNum Input exceeds the normal display range\r\n");
+        return;
+    }
+
+	if(Digit > 0) {		
+		decimals = Nummber - temp;
+		for(i=Digit; i > 0; i--) {
+			decimals*=10;
+		}
+		temp = decimals;
+		//Converts a number to a string
+		for(i=Digit; i>0; i--) {
+			Num_Array[Num_Bit] = temp % 10 + '0';
+			Num_Bit++;
+			temp /= 10;						
+		}	
+		Num_Array[Num_Bit] = '.';
+		Num_Bit++;
+	}
+
+	temp = Nummber;
+    //Converts a number to a string
+    do {
+        Num_Array[Num_Bit] = temp % 10 + '0';
+        Num_Bit++;
+        temp /= 10;
+    } while(temp);
 
     //The string is inverted
     while (Num_Bit > 0) {
@@ -773,6 +841,36 @@ void Paint_DrawBitMap(const unsigned char* image_buffer)
         for (x = 0; x < Paint.WidthByte; x++) {//8 pixel =  1 byte
             Addr = x + y * Paint.WidthByte;
             Paint.Image[Addr] = (unsigned char)image_buffer[Addr];
+        }
+    }
+}
+
+/******************************************************************************
+function:	paste monochrome bitmap to a frame buff
+parameter:
+    image_buffer ：A picture data converted to a bitmap
+    xStart: The starting x coordinate
+    yStart: The starting y coordinate
+    imageWidth: Original image width
+    imageHeight: Original image height
+    flipColor: Whether the color is reversed
+info:
+    Use this function to paste image data into a buffer
+******************************************************************************/
+void Paint_DrawBitMap_Paste(const unsigned char* image_buffer, UWORD xStart, UWORD yStart, UWORD imageWidth, UWORD imageHeight, UBYTE flipColor)
+{
+    UBYTE color, srcImage;
+    UWORD x, y;
+    UWORD width = (imageWidth%8==0 ? imageWidth/8 : imageWidth/8+1);
+    
+    for (y = 0; y < imageHeight; y++) {
+        for (x = 0; x < imageWidth; x++) {
+            srcImage = image_buffer[y*width + x/8];
+            if(flipColor)
+                color = (((srcImage<<(x%8) & 0x80) == 0) ? 1 : 0);
+            else
+                color = (((srcImage<<(x%8) & 0x80) == 0) ? 0 : 1);
+            Paint_SetPixel(x+xStart, y+yStart, color);
         }
     }
 }
