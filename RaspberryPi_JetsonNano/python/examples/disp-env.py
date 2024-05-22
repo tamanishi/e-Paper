@@ -31,41 +31,54 @@ try:
     epd = epd2in7.EPD()
     command1 = subprocess.run(['ssh', 'rp3', '/home/pi/.cargo/bin/measure_home_env_fs', '--dryrun'], text=True, stdout=PIPE)
     command2 = subprocess.run(['ssh', 'rp3', '/home/pi/.cargo/bin/measure_air_quality'], text=True, stdout=PIPE)
+    command3 = subprocess.run(['ssh', 'rp3', '/home/pi/.cargo/bin/measure_air_dust'], text=True, stdout=PIPE)
 
     # print(command1.stdout)
     # print(command2.stdout)
+    # print(command3.stdout)
 
     parsed1 = json.loads(command1.stdout)
     parsed2 = json.loads(command2.stdout)
+    parsed3 = json.loads(command3.stdout)
 
     dt = datetime.datetime.strptime(parsed1['datetime'], '%Y/%m/%d %H:%M:%S')
     strdt = dt.strftime('%a.%b.%-d %-I:%M%p')
 
     epd.init()
-    fontL = ImageFont.truetype('NotoSansMono-Regular.ttf', 32)
+    fontL = ImageFont.truetype('NotoSansMono-Regular.ttf', 28)
     fontM = ImageFont.truetype('NotoSansMono-Regular.ttf', 26)
     fontS = ImageFont.truetype('NotoSansMono-Light.ttf', 18)
     Himage = Image.new('1', (epd.height, epd.width), 255)  # 255: clear the frame
     draw = ImageDraw.Draw(Himage)
+    x_l_offset = 28
+    x_v_offset = x_l_offset + 44
+    x_u_offset = x_v_offset + 92
+    y_offset = 28
+    offset = 0
     # Temperature
-    draw.text((28, 0), u'T' , font = fontL, fill = 0)
-    draw.text((28 + 52, 0), str(round(parsed1['temperature'], 1)), font = fontL, fill = 0)
-    draw.text((28 + 152, 6), u'\'C', font = fontM, fill = 0)
+    draw.text((x_l_offset, y_offset * 0), u'T' , font = fontL, fill = 0)
+    draw.text((x_v_offset, 0), str(round(parsed1['temperature'], 1)), font = fontL, fill = 0)
+    draw.text((x_u_offset, offset), u'\'C', font = fontM, fill = 0)
 
     # Humidity
-    draw.text((28, 32), u'H', font = fontL, fill = 0)
-    draw.text((28 + 52, 32), str(round(parsed1['humidity'], 1)), font = fontL, fill = 0)
-    draw.text((28 + 152, 32 + 6), u'%', font = fontM, fill = 0)
+    draw.text((x_l_offset, y_offset * 1), u'H', font = fontL, fill = 0)
+    draw.text((x_v_offset, y_offset * 1), str(round(parsed1['humidity'], 1)), font = fontL, fill = 0)
+    draw.text((x_u_offset, y_offset * 1 + offset), u'%', font = fontM, fill = 0)
 
     # Pressure
-    draw.text((28, 64), u'P', font = fontL, fill = 0)
-    draw.text((28 + 52, 64), '{:>4}'.format(int(parsed1['pressure'])), font = fontL, fill = 0)
-    draw.text((28 + 152, 64 + 6), u'hPa', font = fontM, fill = 0)
+    draw.text((x_l_offset, y_offset * 2), u'P', font = fontL, fill = 0)
+    draw.text((x_v_offset, y_offset * 2), '{:>4}'.format(int(parsed1['pressure'])), font = fontL, fill = 0)
+    draw.text((x_u_offset, y_offset * 2 + offset), u'hPa', font = fontM, fill = 0)
 
     # CO2
-    draw.text((28, 96), u'C', font = fontL, fill = 0)
-    draw.text((28 + 52, 96), '{:>4}'.format(parsed2['co2']), font = fontL, fill = 0)
-    draw.text((28 + 152, 96 + 6), u'ppm', font = fontM, fill = 0)
+    draw.text((x_l_offset, y_offset * 3), u'C', font = fontL, fill = 0)
+    draw.text((x_v_offset, y_offset * 3), '{:>4}'.format(parsed2['co2']), font = fontL, fill = 0)
+    draw.text((x_u_offset, y_offset * 3 + offset), u'ppm', font = fontM, fill = 0)
+
+    # Dust
+    draw.text((x_l_offset, y_offset * 4), u'D', font = fontL, fill = 0)
+    draw.text((x_v_offset, y_offset * 4), '{:>4}'.format(round(parsed3['dust_density'], 1)), font = fontL, fill = 0)
+    draw.text((x_u_offset, y_offset * 4 + offset), u'ug/m3', font = fontM, fill = 0)
 
     # DateTime
     draw.text((60, 145), strdt, font = fontS, fill = 0)
